@@ -34,5 +34,14 @@
         android:id="@+id/userHomeFragment"
         android:name="com.example.simodista.presenter.home.UserHomeFragment"
         android:label="fragment_user_home"
-        tools:layout="@layout/fragment_user_home" />
+        tools:layout="@layout/fragment_user_home" >
+        <action
+            android:id="@+id/action_userHomeFragment_to_createReportFragment2"
+            app:destination="@id/createReportFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/createReportFragment2"
+        android:name="com.example.simodista.presenter.report.CreateReportFragment"
+        android:label="fragment_create_report"
+        tools:layout="@layout/fragment_create_report" />
 </navigation>

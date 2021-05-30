@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentUserHomeBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +29,10 @@ class UserHomeFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         Log.d("Current User", firebaseAuth.currentUser?.email.toString())
+
+        binding.floatingActionButton.setOnClickListener {
+            view.findNavController().navigate(R.id.action_userHomeFragment_to_createReportFragment2)
+        }
     }
 
 }
