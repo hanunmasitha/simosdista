@@ -43,12 +43,13 @@ class LoginFragment : Fragment() {
             val email = binding.loginEmail.text.toString().trim()
             val password = binding.loginPassword.text.toString().trim()
             if(validateLogin(email, password)){
+                binding.progressBar2.visibility = View.VISIBLE
                 firebaseAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
                     view.findNavController().navigate(R.id.action_loginFragment_to_userHomeFragment)
                 }.addOnFailureListener {
-                    Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_LONG).show()
+                    binding.progressBar2.visibility = View.GONE
+                    Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_SHORT).show()
                 }
-
             }
         }
     }
@@ -63,7 +64,6 @@ class LoginFragment : Fragment() {
             binding.loginPassword.error = "Password is required!"
             return false
         }
-
         return true
     }
 

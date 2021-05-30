@@ -1,13 +1,16 @@
 package com.example.simodista.presenter.register
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.navigation.findNavController
 import com.example.simodista.R
+import com.example.simodista.model.User
 import com.example.simodista.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,29 +34,31 @@ class RegisterFragment : Fragment() {
         firebaseFirestore = FirebaseFirestore.getInstance()
 
         binding.button.setOnClickListener {
+            it.hideKeyboard()
             val name = binding.registerName.text.toString().trim()
             val email = binding.registerEmail.text.toString().trim()
             val phone = binding.editTextPhone.text.toString().trim()
             val password = binding.editTextTextPassword.text.toString().trim()
 
             if(validateRegister(name, email, phone, password)){
+                binding.progressBar.visibility = View.VISIBLE
                 firebaseAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener{
                     val userId = firebaseAuth.currentUser?.uid as String
                     val document = firebaseFirestore.collection("users").document(userId)
 
-                    val user = hashMapOf(
-                        "name" to name,
-                        "email" to email,
-                        "phone" to phone,
+                    val user = User(
+                        name,
+                        email,
+                        phone,
                     )
 
-                    document.set(user).addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Register Success", Toast.LENGTH_LONG).show()
+                    document.set(user).addOnFailureListener {
+                        Toast.makeText(requireContext(), "Register Success", Toast.LENGTH_SHORT).show()
                     }
-
                     view.findNavController().navigate(R.id.action_registerFragment_to_userHomeFragment)
-                }.addOnFailureListener {
-                    Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_LONG).show()
+                }.addOnFailureListener {exception ->
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(requireContext(), exception.message.toString(), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -86,6 +91,11 @@ class RegisterFragment : Fragment() {
         }
 
         return true
+    }
+
+    fun View.hideKeyboard() {
+        val inputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(windowToken, 0)
     }
 
 }
