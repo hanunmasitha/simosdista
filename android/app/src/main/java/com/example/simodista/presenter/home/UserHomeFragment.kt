@@ -2,10 +2,9 @@ package com.example.simodista.presenter.home
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentUserHomeBinding
@@ -20,6 +19,8 @@ class UserHomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        setHasOptionsMenu(true)
+        (activity as AppCompatActivity?)?.supportActionBar?.title = "Home"
         return inflater.inflate(R.layout.fragment_user_home, container, false)
     }
 
@@ -33,6 +34,20 @@ class UserHomeFragment : Fragment() {
         binding.floatingActionButton.setOnClickListener {
             view.findNavController().navigate(R.id.action_userHomeFragment_to_createReportFragment2)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_notification) {
+            view?.findNavController()?.navigate(R.id.action_userHomeFragment_to_notificationFragment)
+        }
+        return super.onOptionsItemSelected(item)
+
     }
 
 }

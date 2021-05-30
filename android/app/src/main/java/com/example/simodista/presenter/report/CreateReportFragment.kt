@@ -10,18 +10,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentCreateReportBinding
 import java.io.File
-import java.util.*
 
 
 class CreateReportFragment : Fragment() {
     lateinit var binding: FragmentCreateReportBinding
-    private val FILE_NAME = "photo.jpg"
-    private val REQUEST_CODE = 42
+
+    companion object{
+        private const val FILE_NAME = "photo.jpg"
+        private const val REQUEST_CODE = 42
+    }
+
     private lateinit var photoFile: File
 
     override fun onCreateView(
@@ -29,13 +33,14 @@ class CreateReportFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        (activity as AppCompatActivity?)?.supportActionBar?.title = "Report"
         return inflater.inflate(R.layout.fragment_create_report, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCreateReportBinding.bind(view)
-        binding.button2.setOnClickListener {
+        binding.fabUploadPhoto.setOnClickListener {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             photoFile = getPhotoFile(FILE_NAME)
 
