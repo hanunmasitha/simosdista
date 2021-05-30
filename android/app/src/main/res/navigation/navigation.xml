@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.simodista.presenter.login.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_userHomeFragment"
+            app:destination="@id/userHomeFragment"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.simodista.presenter.register.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_userHomeFragment"
+            app:destination="@id/userHomeFragment"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/userHomeFragment"
+        android:name="com.example.simodista.presenter.home.UserHomeFragment"
+        android:label="fragment_user_home"
+        tools:layout="@layout/fragment_user_home" >
+        <action
+            android:id="@+id/action_userHomeFragment_to_createReportFragment2"
+            app:destination="@id/createReportFragment2" />
+        <action
+            android:id="@+id/action_userHomeFragment_to_notificationFragment"
+            app:destination="@id/notificationFragment" />
+        <action
+            android:id="@+id/action_userHomeFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createReportFragment2"
+        android:name="com.example.simodista.presenter.report.CreateReportFragment"
+        android:label="fragment_create_report"
+        tools:layout="@layout/fragment_create_report" />
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.simodista.presenter.notification.NotificationFragment"
+        android:label="fragment_notification"
+        tools:layout="@layout/fragment_notification" />
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.simodista.presenter.setting.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true"/>
+    </fragment>
+</navigation>
