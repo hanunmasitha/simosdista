@@ -63,6 +63,8 @@ class CreateReportFragment : Fragment() {
         firebaseFirestore = FirebaseFirestore.getInstance()
         firebaseAuth = FirebaseAuth.getInstance()
 
+        binding.btnSubmit.isEnabled = false
+
         binding.fabUploadPhoto.setOnClickListener {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             photoFile = getPhotoFile(FILE_NAME)
@@ -77,11 +79,12 @@ class CreateReportFragment : Fragment() {
         }
 
         binding.btnSubmit.setOnClickListener {
-            binding.progressBar4.visibility = View.VISIBLE
-            binding.backgroundDim.visibility = View.VISIBLE
-            activity?.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             if(checkField()){
+                binding.progressBar4.visibility = View.VISIBLE
+                binding.backgroundDim.visibility = View.VISIBLE
+                activity?.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
                 val image = storageReference.child("pictures/" + photoFile.name)
                 val docRef = firebaseFirestore.collection("users").document(firebaseAuth.currentUser?.uid.toString())
                 var user : User? = null
@@ -151,11 +154,11 @@ class CreateReportFragment : Fragment() {
             Log.d("Content URI", Uri.fromFile(photoFile).toString())
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
             viewModel.setImageBitmap(takenImage)
-
+            binding.btnSubmit.isEnabled = true
         } else {
             super.onActivityResult(requestCode, resultCode, data)
+            Toast.makeText(requireContext(), "Please take a picture before submit report form", Toast.LENGTH_SHORT).show()
         }
-
     }
 
 
