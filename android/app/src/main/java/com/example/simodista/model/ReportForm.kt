@@ -1,4 +1,11 @@
 package com.example.simodista.model
 
-class ReportForm {
-}
+import com.google.type.DateTime
+
+data class ReportForm(
+    val id : Int? = null,
+    val image_uri : String? = null,
+    val user: User? = null,
+    val date: String? = null,
+    val status: Boolean? = null
+)

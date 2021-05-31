@@ -3,23 +3,41 @@ package com.example.simodista.presenter.report
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentCreateReportBinding
+import com.example.simodista.model.ReportForm
+import com.example.simodista.model.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class CreateReportFragment : Fragment() {
     lateinit var binding: FragmentCreateReportBinding
+    lateinit var viewModel: CreateReportViewModel
+    lateinit var storageReference: StorageReference
+    lateinit var firebaseFirestore: FirebaseFirestore
+    lateinit var firebaseAuth: FirebaseAuth
 
     companion object{
         private const val FILE_NAME = "photo.jpg"
@@ -40,6 +58,11 @@ class CreateReportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCreateReportBinding.bind(view)
+        viewModel = ViewModelProvider(requireActivity()).get(CreateReportViewModel::class.java)
+        storageReference = FirebaseStorage.getInstance().reference
+        firebaseFirestore = FirebaseFirestore.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
+
         binding.fabUploadPhoto.setOnClickListener {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             photoFile = getPhotoFile(FILE_NAME)
@@ -53,6 +76,69 @@ class CreateReportFragment : Fragment() {
             }
         }
 
+        binding.btnSubmit.setOnClickListener {
+            binding.progressBar4.visibility = View.VISIBLE
+            binding.backgroundDim.visibility = View.VISIBLE
+            activity?.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            if(checkField()){
+                val image = storageReference.child("pictures/" + photoFile.name)
+                val docRef = firebaseFirestore.collection("users").document(firebaseAuth.currentUser?.uid.toString())
+                var user : User? = null
+
+                docRef.get().addOnSuccessListener { documentSnapshot ->
+                    user = documentSnapshot.toObject<User>()
+                }
+
+                image.putFile(Uri.fromFile(photoFile)).addOnSuccessListener {
+                    image.downloadUrl.addOnSuccessListener{
+                        createReport(user, it)
+                    }
+                }.removeOnFailureListener{
+                    Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        viewModel.getImageBitmap().observe(viewLifecycleOwner,{
+            binding.imageView.setImageBitmap(it)
+        })
+
+    }
+
+    private fun checkField() : Boolean{
+        if(binding.etDescription.text.isEmpty() ){
+            binding.etDescription.error = "Please fill description form!"
+            return false
+        }
+
+        if(!this::photoFile.isInitialized){
+            Toast.makeText(requireContext(), "Please take picture first!", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
+    }
+
+    private fun createReport(user: User?, uri: Uri) {
+        firebaseFirestore.collection("reports").get().addOnSuccessListener{snap->
+            val reportForm = ReportForm(
+                    id = snap.size() + 1,
+                    user = user,
+                    image_uri = uri.toString(),
+                    date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
+                    status = false
+            )
+
+            val reportId = (System.currentTimeMillis()/1000).toString() + user?.email
+            val document = firebaseFirestore.collection("reports").document(reportId)
+            document.set(reportForm).addOnFailureListener {
+                Toast.makeText(requireContext(), "Register Success", Toast.LENGTH_SHORT).show()
+            }
+
+            binding.progressBar4.visibility = View.VISIBLE
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            view?.findNavController()?.navigate(R.id.action_createReportFragment2_to_userHomeFragment)
+        }
     }
 
     private fun getPhotoFile(fileName: String): File {
@@ -62,8 +148,10 @@ class CreateReportFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            Log.d("Content URI", Uri.fromFile(photoFile).toString())
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
-            binding.imageView.setImageBitmap(takenImage)
+            viewModel.setImageBitmap(takenImage)
+
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
