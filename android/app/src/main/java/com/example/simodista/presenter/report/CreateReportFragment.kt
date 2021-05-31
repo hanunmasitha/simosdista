@@ -1,7 +1,9 @@
 package com.example.simodista.presenter.report
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +16,8 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -71,10 +75,16 @@ class CreateReportFragment : Fragment() {
 
             val fileProvider = FileProvider.getUriForFile(requireContext(), "com.example.android.FileProvider", photoFile)
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
-            if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_CODE)
-            } else {
-                Toast.makeText(requireContext(), "Unable to open camera", Toast.LENGTH_SHORT).show()
+
+            if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 101);
+            }else{
+                if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
+
+                    startActivityForResult(takePictureIntent, REQUEST_CODE)
+                } else {
+                    Toast.makeText(requireContext(), "Unable to open camera", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
