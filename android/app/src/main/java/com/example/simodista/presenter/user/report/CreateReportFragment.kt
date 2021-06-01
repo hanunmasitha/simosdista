@@ -1,4 +1,4 @@
-package com.example.simodista.presenter.report
+package com.example.simodista.presenter.user.report
 
 import android.Manifest
 import android.app.Activity.RESULT_OK

@@ -1,11 +1,10 @@
-package com.example.simodista.presenter.home
+package com.example.simodista.presenter.user.home
 
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.simodista.R
 import com.example.simodista.model.User
@@ -13,10 +12,6 @@ import com.example.simodista.databinding.FragmentUserHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class UserHomeFragment : Fragment() {
     private lateinit var binding: FragmentUserHomeBinding

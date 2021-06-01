@@ -1,4 +1,4 @@
-package com.example.simodista.presenter.report
+package com.example.simodista.presenter.user.report
 
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData

@@ -1,4 +1,4 @@
-package com.example.simodista.presenter.detail
+package com.example.simodista.presenter.user.detail
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

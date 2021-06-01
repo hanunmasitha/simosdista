@@ -1,4 +1,4 @@
-package com.example.simodista.presenter.notification
+package com.example.simodista.presenter.user.notification
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
