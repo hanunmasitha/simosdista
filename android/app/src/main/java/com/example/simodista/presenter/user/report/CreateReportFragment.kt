@@ -5,6 +5,8 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -26,6 +28,8 @@ import com.example.simodista.R
 import com.example.simodista.databinding.FragmentCreateReportBinding
 import com.example.simodista.model.ReportForm
 import com.example.simodista.model.User
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -42,6 +46,7 @@ class CreateReportFragment : Fragment() {
     lateinit var storageReference: StorageReference
     lateinit var firebaseFirestore: FirebaseFirestore
     lateinit var firebaseAuth: FirebaseAuth
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     companion object{
         private const val FILE_NAME = "photo.jpg"
@@ -66,57 +71,80 @@ class CreateReportFragment : Fragment() {
         storageReference = FirebaseStorage.getInstance().reference
         firebaseFirestore = FirebaseFirestore.getInstance()
         firebaseAuth = FirebaseAuth.getInstance()
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         binding.btnSubmit.isEnabled = false
 
         binding.fabUploadPhoto.setOnClickListener {
-            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            photoFile = getPhotoFile(FILE_NAME)
-
-            val fileProvider = FileProvider.getUriForFile(requireContext(), "com.example.android.FileProvider", photoFile)
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
-
-            if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 101);
-            }else{
-                if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
-
-                    startActivityForResult(takePictureIntent, REQUEST_CODE)
-                } else {
-                    Toast.makeText(requireContext(), "Unable to open camera", Toast.LENGTH_SHORT).show()
-                }
-            }
+            openCamera()
+            setUserLocation()
         }
 
         binding.btnSubmit.setOnClickListener {
-            if(checkField()){
-                binding.progressBar4.visibility = View.VISIBLE
-                binding.backgroundDim.visibility = View.VISIBLE
-                activity?.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-
-                val image = storageReference.child("pictures/" + photoFile.name)
-                val docRef = firebaseFirestore.collection("users").document(firebaseAuth.currentUser?.uid.toString())
-                var user : User? = null
-
-                docRef.get().addOnSuccessListener { documentSnapshot ->
-                    user = documentSnapshot.toObject<User>()
-                }
-
-                image.putFile(Uri.fromFile(photoFile)).addOnSuccessListener {
-                    image.downloadUrl.addOnSuccessListener{
-                        createReport(user, it)
-                    }
-                }.removeOnFailureListener{
-                    Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_SHORT).show()
-                }
-            }
+            submitReportForm()
         }
 
-        viewModel.getImageBitmap().observe(viewLifecycleOwner,{
+        viewModel.getImageBitmap().observe(viewLifecycleOwner, {
             binding.imageView.setImageBitmap(it)
         })
+    }
 
+    private fun submitReportForm() {
+        if(checkField()){
+            binding.progressBar4.visibility = View.VISIBLE
+            binding.backgroundDim.visibility = View.VISIBLE
+            activity?.window?.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+
+            val image = storageReference.child("pictures/" + photoFile.name)
+            val docRef = firebaseFirestore.collection("users").document(firebaseAuth.currentUser?.uid.toString())
+            var user : User? = null
+
+            docRef.get().addOnSuccessListener { documentSnapshot ->
+                user = documentSnapshot.toObject<User>()
+            }
+
+            image.putFile(Uri.fromFile(photoFile)).addOnSuccessListener {
+                image.downloadUrl.addOnSuccessListener{
+                    createReport(user, it)
+                }
+            }.removeOnFailureListener{
+                Toast.makeText(requireContext(), it.message.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun openCamera() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        photoFile = getPhotoFile()
+
+        val fileProvider = FileProvider.getUriForFile(
+            requireContext(),
+            "com.example.android.FileProvider",
+            photoFile
+        )
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
+
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ), 101
+            )
+        }else{
+            if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_CODE)
+            } else {
+                Toast.makeText(requireContext(), "Unable to open camera", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun checkField() : Boolean{
@@ -133,13 +161,16 @@ class CreateReportFragment : Fragment() {
     }
 
     private fun createReport(user: User?, uri: Uri) {
-        firebaseFirestore.collection("reports").get().addOnSuccessListener{snap->
+        firebaseFirestore.collection("reports").get().addOnSuccessListener{ snap->
+            val array = viewModel.getLocation()
             val reportForm = ReportForm(
-                    id = snap.size() + 1,
-                    user = user,
-                    image_uri = uri.toString(),
-                    date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
-                    status = false
+                id = snap.size() + 1,
+                user = user,
+                image_uri = uri.toString(),
+                date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
+                status = false,
+                lat = array[0],
+                long = array[1]
             )
 
             val reportId = (System.currentTimeMillis()/1000).toString() + user?.email
@@ -154,9 +185,26 @@ class CreateReportFragment : Fragment() {
         }
     }
 
-    private fun getPhotoFile(fileName: String): File {
+    private fun getPhotoFile(): File {
         val storageDirectory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(fileName, ".jpg", storageDirectory)
+        return File.createTempFile(FILE_NAME, ".jpg", storageDirectory)
+    }
+
+    private fun setUserLocation(){
+        if(ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.CAMERA),
+                101
+            )
+        }else{
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+                viewModel.setLocation(it.latitude, it.longitude)
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -165,9 +213,22 @@ class CreateReportFragment : Fragment() {
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
             viewModel.setImageBitmap(takenImage)
             binding.btnSubmit.isEnabled = true
+
+            val array = viewModel.getLocation()
+            val geocoder = Geocoder(requireContext(), Locale.getDefault())
+            val addresses: List<Address> = geocoder.getFromLocation(array[0], array[1], 1)
+
+            binding.imageView4.visibility = View.VISIBLE
+            binding.textView5.visibility = View.VISIBLE
+            binding.textView5.text = addresses[0].getAddressLine(0)
+
         } else {
             super.onActivityResult(requestCode, resultCode, data)
-            Toast.makeText(requireContext(), "Please take a picture before submit report form", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Please take a picture before submit report form",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

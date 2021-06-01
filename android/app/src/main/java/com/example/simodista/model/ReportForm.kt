@@ -7,5 +7,7 @@ data class ReportForm(
     val image_uri : String? = null,
     val user: User? = null,
     val date: String? = null,
-    val status: Boolean? = null
+    val status: Boolean? = null,
+    val lat: Double? = null,
+    val long: Double? = null
 )
