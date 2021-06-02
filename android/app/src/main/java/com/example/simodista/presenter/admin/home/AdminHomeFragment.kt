@@ -2,6 +2,7 @@ package com.example.simodista.presenter.admin.home
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -25,6 +26,7 @@ class AdminHomeFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         setHasOptionsMenu(true)
+        (activity as AppCompatActivity?)?.supportActionBar?.title = "Home"
         return inflater.inflate(R.layout.fragment_admin_home, container, false)
     }
 
