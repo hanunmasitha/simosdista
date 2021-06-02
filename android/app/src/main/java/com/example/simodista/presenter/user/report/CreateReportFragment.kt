@@ -101,7 +101,6 @@ class CreateReportFragment : Fragment() {
             val image = storageReference.child("pictures/" + photoFile.name)
             val docRef = firebaseFirestore.collection("users").document(firebaseAuth.currentUser?.uid.toString())
             var user : User? = null
-
             docRef.get().addOnSuccessListener { documentSnapshot ->
                 user = documentSnapshot.toObject<User>()
             }
@@ -164,13 +163,14 @@ class CreateReportFragment : Fragment() {
         firebaseFirestore.collection("reports").get().addOnSuccessListener{ snap->
             val array = viewModel.getLocation()
             val reportForm = ReportForm(
-                id = snap.size() + 1,
-                user = user,
-                image_uri = uri.toString(),
-                date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
-                status = false,
-                lat = array[0],
-                long = array[1]
+                    id = snap.size() + 1,
+                    user = user,
+                    image_uri = uri.toString(),
+                    date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
+                    status = false,
+                    lat = array[0],
+                    long = array[1],
+                    description = binding.etDescription.text.toString().trim()
             )
 
             val reportId = (System.currentTimeMillis()/1000).toString() + user?.email

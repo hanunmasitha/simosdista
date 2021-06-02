@@ -85,5 +85,19 @@
         <action
             android:id="@+id/action_adminHomeFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_createFeedbackFragment"
+            app:destination="@id/createFeedbackFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createFeedbackFragment"
+        android:name="com.example.simodista.presenter.admin.feedback.CreateFeedbackFragment"
+        android:label="fragment_create_feedback"
+        tools:layout="@layout/fragment_create_feedback" >
+        <action
+            android:id="@+id/action_createFeedbackFragment_to_adminHomeFragment"
+            app:destination="@id/adminHomeFragment"
+            app:popUpTo="@id/navigation"
+            app:popUpToInclusive="true"/>
     </fragment>
 </navigation>

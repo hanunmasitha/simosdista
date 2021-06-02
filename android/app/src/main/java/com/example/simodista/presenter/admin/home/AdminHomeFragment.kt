@@ -1,7 +1,6 @@
 package com.example.simodista.presenter.admin.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -10,12 +9,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simodista.R
 import com.example.simodista.adapter.ReportListAdapter
 import com.example.simodista.databinding.FragmentAdminHomeBinding
+import com.example.simodista.model.ReportForm
 
 
 class AdminHomeFragment : Fragment() {
     lateinit var binding : FragmentAdminHomeBinding
     lateinit var viewModel: AdminHomeViewModel
     lateinit var adapter : ReportListAdapter
+
+    companion object{
+        const val EXTRA_ID = "extra_id"
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -31,8 +35,15 @@ class AdminHomeFragment : Fragment() {
 
         viewModel.setReport()
         showRecycleView()
-        viewModel.getReport().observe(viewLifecycleOwner,{
-            Log.d("LIST TEST", it.size.toString())
+        adapter.setOnItemClickCallback(object : ReportListAdapter.OnItemClickCallback{
+            override fun onItemClicked(data: ReportForm) {
+                if(data.status == false){
+                    val bundle = Bundle()
+                    bundle.putInt(EXTRA_ID, data.id as Int)
+                    view.findNavController().navigate(R.id.action_adminHomeFragment_to_createFeedbackFragment, bundle)
+                }
+            }
+
         })
     }
 

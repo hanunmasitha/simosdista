@@ -1,7 +1,5 @@
 package com.example.simodista.model
 
-import com.google.type.DateTime
-
 data class ReportForm(
     val id : Int? = null,
     val image_uri : String? = null,
@@ -9,5 +7,6 @@ data class ReportForm(
     val date: String? = null,
     val status: Boolean? = null,
     val lat: Double? = null,
-    val long: Double? = null
+    val long: Double? = null,
+    val description: String? = null
 )
