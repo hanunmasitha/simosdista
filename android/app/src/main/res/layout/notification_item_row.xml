@@ -19,6 +19,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_feedback_title"
+        app:layout_constraintStart_toEndOf="@+id/tv_feedback_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_feedback_title"
+        app:srcCompat="@drawable/ic_baseline_check_24"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_feedback_date"
         android:layout_width="wrap_content"
