@@ -65,7 +65,11 @@
         android:id="@+id/notificationFragment"
         android:name="com.example.simodista.presenter.user.notification.NotificationFragment"
         android:label="fragment_notification"
-        tools:layout="@layout/fragment_notification" />
+        tools:layout="@layout/fragment_notification" >
+        <action
+            android:id="@+id/action_notificationFragment_to_feedbackDetailFragment"
+            app:destination="@id/feedbackDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.example.simodista.presenter.setting.SettingFragment"
@@ -108,4 +112,9 @@
         android:name="com.example.simodista.presenter.admin.detail.DetailFeedbackFragment"
         android:label="fragment_detail_feedback"
         tools:layout="@layout/fragment_detail_feedback" />
+    <fragment
+        android:id="@+id/feedbackDetailFragment"
+        android:name="com.example.simodista.presenter.user.detail.FeedbackDetailFragment"
+        android:label="fragment_feedback_detail"
+        tools:layout="@layout/fragment_feedback_detail" />
 </navigation>
