@@ -39,6 +39,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        tools:listitem="@layout/notification_item_row"/>
+        tools:listitem="@layout/report_item_row"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

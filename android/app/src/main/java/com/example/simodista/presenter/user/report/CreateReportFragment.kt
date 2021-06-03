@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Address
 import android.location.Geocoder
@@ -30,12 +32,21 @@ import com.example.simodista.model.ReportForm
 import com.example.simodista.model.User
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import org.tensorflow.lite.Interpreter
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.OutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.MappedByteBuffer
+import java.nio.channels.FileChannel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -47,6 +58,8 @@ class CreateReportFragment : Fragment() {
     lateinit var firebaseFirestore: FirebaseFirestore
     lateinit var firebaseAuth: FirebaseAuth
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    lateinit var interpreter: Interpreter
+    lateinit var labelList: List<String>
 
     companion object{
         private const val FILE_NAME = "photo.jpg"
@@ -73,6 +86,13 @@ class CreateReportFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
+        val assetManager = requireContext().assets
+        val options = Interpreter.Options()
+        options.setNumThreads(5)
+        options.setUseNNAPI(true)
+        interpreter = Interpreter(loadModelFile(assetManager, "newmodel.tflite"), options)
+        labelList = loadLabelList(assetManager, "label.txt")
+
         binding.btnSubmit.isEnabled = false
 
         binding.fabUploadPhoto.setOnClickListener {
@@ -87,6 +107,19 @@ class CreateReportFragment : Fragment() {
         viewModel.getImageBitmap().observe(viewLifecycleOwner, {
             binding.imageView.setImageBitmap(it)
         })
+    }
+
+    private fun loadModelFile(assets: AssetManager, modelName: String): MappedByteBuffer {
+        val fileDescriptor = assets.openFd(modelName)
+        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+        val fileChannel = inputStream.channel
+        val startOffset = fileDescriptor.startOffset
+        val declaredLength = fileDescriptor.declaredLength
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
+    }
+
+    private fun loadLabelList(assetManager: AssetManager, labelPath: String): List<String> {
+        return assetManager.open(labelPath).bufferedReader().useLines {it.toList() }
     }
 
     private fun submitReportForm() {
@@ -163,24 +196,25 @@ class CreateReportFragment : Fragment() {
         firebaseFirestore.collection("reports").get().addOnSuccessListener{ snap->
             val array = viewModel.getLocation()
             val reportForm = ReportForm(
-                    id = snap.size() + 1,
-                    user = user,
-                    image_uri = uri.toString(),
-                    date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
-                    status = false,
-                    lat = array[0],
-                    long = array[1],
-                    description = binding.etDescription.text.toString().trim()
+                id = snap.size() + 1,
+                user = user,
+                image_uri = uri.toString(),
+                date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
+                status = false,
+                lat = array[0],
+                long = array[1],
+                description = binding.etDescription.text.toString().trim()
             )
 
             val reportId = (System.currentTimeMillis()/1000).toString() + user?.email
             val document = firebaseFirestore.collection("reports").document(reportId)
             document.set(reportForm).addOnFailureListener {
-                Toast.makeText(requireContext(), "Register Success", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to submit report", Toast.LENGTH_SHORT).show()
             }
 
             binding.progressBar4.visibility = View.VISIBLE
             activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            Snackbar.make(view as View, "Report Submitted", Snackbar.LENGTH_SHORT).show()
             view?.findNavController()?.navigate(R.id.action_createReportFragment2_to_userHomeFragment)
         }
     }
@@ -209,12 +243,27 @@ class CreateReportFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            Log.d("Content URI", Uri.fromFile(photoFile).toString())
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
+
+            val scaledBitmap = Bitmap.createScaledBitmap(takenImage, 224, 224, false)
+            val byteBuffer = convertBitmapToByteBuffer(scaledBitmap)
+            val result = Array(1) { FloatArray(labelList.size) }
+            interpreter.run(byteBuffer, result)
+
+            Log.d("RESULT", result[0][0].toString())
+            if(result[0][0] < 0.05f){
+                Snackbar.make(
+                    view as View,
+                    "No crowd detected. Please take another photo or try different angle!",
+                    Snackbar.LENGTH_LONG
+                ).show()
+                binding.btnSubmit.isEnabled = false
+            }else{
+                Log.d("RESULT", "TERJADI KERAMAIAN")
+                binding.btnSubmit.isEnabled = true
+            }
+
             viewModel.setImageBitmap(takenImage)
-
-
-            binding.btnSubmit.isEnabled = true
 
             val array = viewModel.getLocation()
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
@@ -232,6 +281,33 @@ class CreateReportFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun convertBitmapToByteBuffer(scaledBitmap: Bitmap): Any {
+        val byteBuffer = ByteBuffer.allocateDirect(4 * 224 * 224 * 3)
+        byteBuffer.order(ByteOrder.nativeOrder())
+        val intValues = IntArray(224 * 224)
+
+        scaledBitmap.getPixels(
+            intValues,
+            0,
+            scaledBitmap.width,
+            0,
+            0,
+            scaledBitmap.width,
+            scaledBitmap.height
+        )
+        var pixel = 0
+        for (i in 0 until 224) {
+            for (j in 0 until 224) {
+                val input = intValues[pixel++]
+
+                byteBuffer.putFloat((((input.shr(16) and 0xFF) - 0) / 255.0f))
+                byteBuffer.putFloat((((input.shr(8) and 0xFF) - 0) / 255.0f))
+                byteBuffer.putFloat((((input and 0xFF) - 0) / 255.0f))
+            }
+        }
+        return byteBuffer
     }
 
 

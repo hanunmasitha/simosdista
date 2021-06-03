@@ -9,5 +9,5 @@
         android:id="@+id/rv_list_notification"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/notification_item_row"/>
+        tools:listitem="@layout/report_item_row"/>
 </FrameLayout>

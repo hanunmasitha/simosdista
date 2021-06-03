@@ -39,10 +39,12 @@ class AdminHomeFragment : Fragment() {
         showRecycleView()
         adapter.setOnItemClickCallback(object : ReportListAdapter.OnItemClickCallback{
             override fun onItemClicked(data: ReportForm) {
+                val bundle = Bundle()
+                bundle.putInt(EXTRA_ID, data.id as Int)
                 if(data.status == false){
-                    val bundle = Bundle()
-                    bundle.putInt(EXTRA_ID, data.id as Int)
                     view.findNavController().navigate(R.id.action_adminHomeFragment_to_createFeedbackFragment, bundle)
+                }else{
+                    view.findNavController().navigate(R.id.action_adminHomeFragment_to_detailFeedbackFragment, bundle)
                 }
             }
 

@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.simodista.databinding.NotificationItemRowBinding
+import com.example.simodista.databinding.ReportItemRowBinding
 import com.example.simodista.model.ReportForm
 
 class ReportListAdapter : RecyclerView.Adapter<ReportListAdapter.ListViewHolder>() {
@@ -25,7 +25,7 @@ class ReportListAdapter : RecyclerView.Adapter<ReportListAdapter.ListViewHolder>
         notifyDataSetChanged()
     }
 
-    class ListViewHolder(private val binding: NotificationItemRowBinding): RecyclerView.ViewHolder(binding.root) {
+    class ListViewHolder(private val binding: ReportItemRowBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(report: ReportForm){
             binding.tvFeedbackTitle.text = "Report - ${report.id}"
             binding.tvFeedbackDescription.text = report.description
@@ -37,7 +37,7 @@ class ReportListAdapter : RecyclerView.Adapter<ReportListAdapter.ListViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
-        val binding = NotificationItemRowBinding.inflate(
+        val binding = ReportItemRowBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
