@@ -212,6 +212,8 @@ class CreateReportFragment : Fragment() {
             Log.d("Content URI", Uri.fromFile(photoFile).toString())
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
             viewModel.setImageBitmap(takenImage)
+
+
             binding.btnSubmit.isEnabled = true
 
             val array = viewModel.getLocation()

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.example.simodista.R
 import com.example.simodista.model.User
@@ -23,6 +24,7 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+        (activity as AppCompatActivity?)?.supportActionBar?.title = "Register"
         return inflater.inflate(R.layout.fragment_register, container, false)
     }
 
