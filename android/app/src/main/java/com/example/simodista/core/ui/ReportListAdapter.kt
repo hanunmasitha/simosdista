@@ -1,34 +1,38 @@
-package com.example.simodista.adapter
+package com.example.simodista.core.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simodista.databinding.ReportItemRowBinding
-import com.example.simodista.model.FeedbackForm
+import com.example.simodista.core.domain.model.ReportForm
 
-class FeedbackListAdapter : RecyclerView.Adapter<FeedbackListAdapter.ListViewHolder>() {
-    private val reports: ArrayList<FeedbackForm> = ArrayList()
+class ReportListAdapter : RecyclerView.Adapter<ReportListAdapter.ListViewHolder>() {
+    private val reports: ArrayList<ReportForm> = ArrayList()
     private lateinit var onItemClickCallback: OnItemClickCallback
 
     interface OnItemClickCallback {
-        fun onItemClicked(data: FeedbackForm)
+        fun onItemClicked(data: ReportForm)
     }
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
         this.onItemClickCallback = onItemClickCallback
     }
 
-    fun setReport(list: ArrayList<FeedbackForm>){
+    fun setReport(list: ArrayList<ReportForm>){
         reports.clear()
         reports.addAll(list)
         notifyDataSetChanged()
     }
 
     class ListViewHolder(private val binding: ReportItemRowBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(report: FeedbackForm){
-            binding.tvFeedbackTitle.text = "Feedback - ${report.id}"
+        fun bind(report: ReportForm){
+            binding.tvFeedbackTitle.text = "Report - ${report.id}"
             binding.tvFeedbackDescription.text = report.description
             binding.tvFeedbackDate.text = report.date
+            if (report.status == true){
+                binding.imageView6.visibility = View.VISIBLE
+            }
         }
     }
 

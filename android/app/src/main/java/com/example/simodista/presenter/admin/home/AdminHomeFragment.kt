@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simodista.R
-import com.example.simodista.adapter.ReportListAdapter
+import com.example.simodista.core.ui.ReportListAdapter
 import com.example.simodista.databinding.FragmentAdminHomeBinding
-import com.example.simodista.model.ReportForm
+import com.example.simodista.core.domain.model.ReportForm
 
 
 class AdminHomeFragment : Fragment() {

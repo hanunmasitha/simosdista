@@ -11,12 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simodista.R
-import com.example.simodista.adapter.FeedbackListAdapter
-import com.example.simodista.adapter.ReportListAdapter
+import com.example.simodista.core.ui.FeedbackListAdapter
 import com.example.simodista.databinding.FragmentNotificationBinding
-import com.example.simodista.model.FeedbackForm
-import com.example.simodista.model.ReportForm
-import com.example.simodista.presenter.admin.home.AdminHomeFragment
+import com.example.simodista.core.domain.model.FeedbackForm
 import com.google.firebase.auth.FirebaseAuth
 
 

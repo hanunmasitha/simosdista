@@ -1,4 +1,4 @@
-package com.example.simodista.model
+package com.example.simodista.core.domain.model
 
 data class ReportForm(
     val id : Int? = null,

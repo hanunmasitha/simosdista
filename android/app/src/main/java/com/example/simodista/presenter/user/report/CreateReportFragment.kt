@@ -28,8 +28,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentCreateReportBinding
-import com.example.simodista.model.ReportForm
-import com.example.simodista.model.User
+import com.example.simodista.core.domain.model.ReportForm
+import com.example.simodista.core.domain.model.User
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
@@ -41,8 +41,6 @@ import com.google.firebase.storage.StorageReference
 import org.tensorflow.lite.Interpreter
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer

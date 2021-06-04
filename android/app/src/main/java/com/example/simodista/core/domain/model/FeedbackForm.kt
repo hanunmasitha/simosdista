@@ -1,4 +1,4 @@
-package com.example.simodista.model
+package com.example.simodista.core.domain.model
 
 data class FeedbackForm(
     val id : Int? = null,

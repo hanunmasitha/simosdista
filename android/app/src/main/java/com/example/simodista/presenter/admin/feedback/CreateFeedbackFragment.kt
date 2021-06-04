@@ -20,9 +20,9 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentCreateFeedbackBinding
-import com.example.simodista.model.FeedbackForm
-import com.example.simodista.model.ReportForm
-import com.example.simodista.model.User
+import com.example.simodista.core.domain.model.FeedbackForm
+import com.example.simodista.core.domain.model.ReportForm
+import com.example.simodista.core.domain.model.User
 import com.example.simodista.presenter.admin.home.AdminHomeFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
