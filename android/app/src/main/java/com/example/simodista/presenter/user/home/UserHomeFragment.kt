@@ -12,11 +12,13 @@ import com.example.simodista.databinding.FragmentUserHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class UserHomeFragment : Fragment() {
     private lateinit var binding: FragmentUserHomeBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private val homeViewModel : UserHomeViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +29,8 @@ class UserHomeFragment : Fragment() {
         binding = FragmentUserHomeBinding.inflate(inflater,  container, false)
         binding.floatingActionButton.visibility = View.GONE
         binding.progressBar3.visibility = View.VISIBLE
+        binding.backgroundDim.visibility = View.VISIBLE
+        binding.progressBar5.visibility = View.VISIBLE
 
         return binding.root
     }
@@ -45,6 +49,15 @@ class UserHomeFragment : Fragment() {
             binding.textView2.text = "Welcome, "
             binding.textView3.text = user?.name
         }
+
+        homeViewModel.getCovidIndonesia().observe(requireActivity(), {
+            binding.tvDirawat.text = it.dirawat
+            binding.tvMeninggal.text = it.meninggal
+            binding.tvSembuh.text = it.sembuh
+            binding.tvPositif.text = it.positif
+            binding.backgroundDim.visibility = View.GONE
+            binding.progressBar5.visibility = View.GONE
+        })
 
         Log.d("Current User", firebaseAuth.currentUser?.email.toString())
 
