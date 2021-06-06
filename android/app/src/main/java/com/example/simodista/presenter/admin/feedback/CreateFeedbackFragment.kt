@@ -20,10 +20,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentCreateFeedbackBinding
-import com.example.simodista.model.FeedbackForm
-import com.example.simodista.model.ReportForm
-import com.example.simodista.model.User
+import com.example.simodista.core.domain.model.FeedbackForm
+import com.example.simodista.core.domain.model.ReportForm
+import com.example.simodista.core.domain.model.User
 import com.example.simodista.presenter.admin.home.AdminHomeFragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -70,7 +71,6 @@ class CreateFeedbackFragment : Fragment() {
                 val user = documentSnapshot.toObject<User>()
                 submitFeedback(user)
             }
-
         }
     }
 
@@ -81,18 +81,19 @@ class CreateFeedbackFragment : Fragment() {
                 id = snap.size() + 1,
                 user = user,
                 date = SimpleDateFormat("dd-MM-yyyy_HH:mm:ss", Locale.getDefault()).format(Date()),
-                description = binding.tvDescription.text.toString(),
+                description = binding.editTextTextMultiLine.text.toString().trim(),
                 report = reportForm
             )
 
             val reportId = (System.currentTimeMillis()/1000).toString() +"-"+ user?.email
             val document = firestore.collection("feedbacks").document(reportId)
             document.set(feedbackForm).addOnFailureListener {
-                Toast.makeText(requireContext(), "Register Success", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to submit feedback", Toast.LENGTH_SHORT).show()
             }
 
             binding.progressBar6.visibility = View.VISIBLE
             activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            Snackbar.make(view as View, "Feedback Sent", Snackbar.LENGTH_SHORT).show()
             view?.findNavController()?.navigate(R.id.action_createFeedbackFragment_to_adminHomeFragment)
         }
     }

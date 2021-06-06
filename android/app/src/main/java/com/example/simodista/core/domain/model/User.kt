@@ -1,4 +1,4 @@
-package com.example.simodista.model
+package com.example.simodista.core.domain.model
 
 data class User(
     val name: String? = null,

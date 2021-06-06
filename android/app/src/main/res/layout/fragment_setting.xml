@@ -7,23 +7,19 @@
     tools:context=".presenter.setting.SettingFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btn_logout"
-        style="?attr/materialButtonOutlinedStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
         android:text="logout"
-        android:textColor="#b23b3b"
-        app:backgroundTint="@android:color/transparent"
+        android:textColor="@color/white"
         app:cornerRadius="8dp"
+        android:backgroundTint="#b23b3b"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:rippleColor="#b23b3b"
-        app:strokeColor="#b23b3b"
-        app:strokeWidth="2dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

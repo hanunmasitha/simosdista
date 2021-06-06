@@ -6,11 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.example.simodista.R
 import com.example.simodista.databinding.FragmentLoginBinding
-import com.example.simodista.model.User
+import com.example.simodista.core.domain.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -49,6 +50,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        (activity as AppCompatActivity?)?.supportActionBar?.title = "Simosdista"
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 

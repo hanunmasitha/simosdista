@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simodista.R
-import com.example.simodista.adapter.ReportListAdapter
+import com.example.simodista.core.ui.ReportListAdapter
 import com.example.simodista.databinding.FragmentAdminHomeBinding
-import com.example.simodista.model.ReportForm
+import com.example.simodista.core.domain.model.ReportForm
 
 
 class AdminHomeFragment : Fragment() {
@@ -39,10 +39,12 @@ class AdminHomeFragment : Fragment() {
         showRecycleView()
         adapter.setOnItemClickCallback(object : ReportListAdapter.OnItemClickCallback{
             override fun onItemClicked(data: ReportForm) {
+                val bundle = Bundle()
+                bundle.putInt(EXTRA_ID, data.id as Int)
                 if(data.status == false){
-                    val bundle = Bundle()
-                    bundle.putInt(EXTRA_ID, data.id as Int)
                     view.findNavController().navigate(R.id.action_adminHomeFragment_to_createFeedbackFragment, bundle)
+                }else{
+                    view.findNavController().navigate(R.id.action_adminHomeFragment_to_detailFeedbackFragment, bundle)
                 }
             }
 
@@ -64,7 +66,7 @@ class AdminHomeFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
-        inflater.inflate(R.menu.menu, menu)
+        inflater.inflate(R.menu.menu_admin, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -3,7 +3,7 @@ package com.example.simodista.presenter.admin.feedback
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.simodista.model.ReportForm
+import com.example.simodista.core.domain.model.ReportForm
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 
