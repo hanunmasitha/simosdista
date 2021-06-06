@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "99079522278",
+    "project_id": "simosdista-app",
+    "storage_bucket": "simosdista-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99079522278:android:3adcdaa2903c5c6da3b827",
+        "android_client_info": {
+          "package_name": "com.example.simodista"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "99079522278-ak06c8sibnbr7ptcbu4a84oqesmcfdjt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBes4qiO7i3X6xEXkVIG5S68OZnsXIC2Ew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "99079522278-ak06c8sibnbr7ptcbu4a84oqesmcfdjt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
