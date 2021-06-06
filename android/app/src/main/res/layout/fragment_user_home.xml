@@ -14,7 +14,6 @@
         android:layout_marginTop="16dp"
         android:textColor="@color/blue"
         android:textSize="20sp"
-        android:letterSpacing=".1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,7 +104,7 @@
         android:layout_width="160dp"
         android:layout_height="80dp"
         android:layout_marginTop="16dp"
-        app:cardBackgroundColor="@color/red"
+        app:cardBackgroundColor="@color/yellow"
         app:layout_constraintEnd_toStartOf="@+id/materialCardView3"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -169,6 +168,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Recent Crowd Location"
+        android:textColor="@color/black"
+        android:letterSpacing=".1"
+        app:layout_constraintStart_toStartOf="@+id/materialCardView4"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView4" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_location_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        tools:listitem="@layout/location_item_row"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/materialCardView3"
+        app:layout_constraintStart_toStartOf="@+id/materialCardView4"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
