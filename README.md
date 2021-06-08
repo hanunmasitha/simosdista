@@ -1,5 +1,5 @@
 # Simosdista - Bangkit 2021 - B21-CAP0277
-Simosdista is an Mobile Application about ....
+Simosdista is an android based reporting system that can warn social distancing violations in certain areas and analyze its performance in distance determination. In this case, the user can make a report of violation and it will be sent to the system as a notification to the authorities in order to make a decision. After we know that there is a social distancing violation in a certain area, it will be followed up by the authorities.
 
 ## Built with
 * Min SDK : 26
